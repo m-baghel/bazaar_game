@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Bazaar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f1ea;--fg:#222;--pn:#fff;--ft:#2d6a4f;--bd:#c9c3b5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1d1f;--fg:#eee;--pn:#2a2d30;--ft:#1f4d3a;--bd:#444}}
+:root[data-theme="dark"]{--bg:#1b1d1f;--fg:#eee;--pn:#2a2d30;--ft:#1f4d3a;--bd:#444}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px system-ui,sans-serif;padding:10px;max-width:900px;margin:auto}
+h4{margin:0 0 4px;font-size:13px}button{font:inherit;padding:8px 12px;margin:3px;border-radius:8px;border:1px solid var(--bd);background:var(--pn);color:var(--fg);cursor:pointer}
+button.p{background:#e0a100;color:#111;border-color:#e0a100;font-weight:600}
+.pn{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:8px;margin:8px 0}
+.ft{background:var(--ft);color:#fff;border-color:var(--ft)}
+.card{width:46px;height:66px;background:#fff;color:#111;border-radius:6px;border:1px solid #888;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-size:16px;margin:2px;vertical-align:top;user-select:none}
+.card.red{color:#c0272d}.card.sel{transform:translateY(-10px);outline:3px solid #e0a100}
+.card.sm{width:32px;height:46px;font-size:12px;margin:1px}.card.big{width:62px;height:88px;font-size:22px}
+.back{background:repeating-linear-gradient(45deg,#2f5d9e,#2f5d9e 4px,#244a80 4px,#244a80 8px)}
+.row{display:flex;flex-wrap:wrap;gap:8px}.row>div{flex:1;min-width:230px}
+.sc span{display:inline-block;margin-right:12px}.msg{font-weight:600;min-height:20px}
+#ov{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px}
+#ov>div{background:var(--pn);padding:18px;border-radius:12px;max-width:380px;width:100%}
+details{font-size:13px}
+</style></head><body><div id="app"></div><div id="ov"></div>
+<script>
+const N=['','','2','3','4','5','6','7','8','9','10','J','Q','K','A'],S=['♠','♥','♦','♣'];
+const pts=c=>c.r<=9?.5:c.r<=13?1:2,sum=a=>a.reduce((t,c)=>t+pts(c),0),tp=a=>a[a.length-1];
+const run=a=>{let k=0;while(k<a.length&&a[a.length-1-k].r==tp(a).r)k++;return k};
+const $=id=>document.getElementById(id);let G=null,sel=[],cuo=[],ME=0,MYID='',DB=null,UN=null,CODE='',LB=null;
+const pileOf=p=>G.n==4?p%2:p;
+const pname=p=>p==ME?'You':G.on?'Player '+(p+1)+(G.n==4&&p%2==ME%2?' (partner)':''):G.n==4?['','West','Partner','East'][p]:G.n==2?'Computer':'CPU '+p;
+const plname=i=>G.n==4?(i==ME%2?'Your team':'Opponents'):i==ME?'You':G.on?'Player '+(i+1):G.n==2?'Computer':'CPU '+i;
+function menu(){if(UN){UN();UN=null}ME=0;G=null;$('ov').style.display='none';$('app').innerHTML=`<h2>🃏 Bazaar</h2><div class=pn><p>Build face-up piles of matching cards. First to <b>52 points</b> wins. Choose a mode:</p>
+<button class=p onclick=start(2)>2 players</button><button class=p onclick=start(3)>3 players (free-for-all)</button><button class=p onclick=start(4)>4 players (you + partner vs 2)</button></div>
+<div class=pn><b>🌐 Play online with friends</b><br><button onclick=createRoom(2)>Create 2-player room</button><button onclick=createRoom(3)>3-player</button><button onclick=createRoom(4)>4-player (teams)</button><br><input id=code placeholder="Room code" maxlength=4 style="padding:8px;width:110px"><button onclick=joinRoom()>Join room</button></div><details class=pn open><summary>Rules as implemented</summary><ul>
+<li>2–9 = ½ pt, 10–K = 1 pt, Ace = 2 pts. Everyone gets 4 cards per cycle; 4 cards start face-up on the table.</li>
+<li><b>Add to your pile:</b> a pair/triplet/quad from hand, <b>or a single card matching the face-up top card</b> of your pile.</li>
+<li><b>Take:</b> a card matching the top of the table pile or an opponent's pile takes the matching top card(s).</li>
+<li><b>Any valid add/take gives you another move</b> – then add again or discard. You may <b>always discard</b> instead.</li>
+<li><b>Cycle 1, your first turn:</b> match the table top to take the <b>whole table pile</b> (or an opponent's whole <i>unsecured</i> 🔓 pile). Then add anything (even a second matching card) to <b>secure</b> it – secured piles can only be taken from the top.</li>
+<li><b>4 players:</b> only 2 piles, one per team. You see your team's whole pile; opponents show only their top card.</li></ul></details>`}
+function start(n){G={n,scores:Array(n==4?2:n).fill(0)};newRound()}
+function newRound(){$('ov').style.display='none';const np=G.scores.length,d=[];
+for(let s=0;s<4;s++)for(let r=2;r<=14;r++)d.push({r,s});
+for(let i=51;i>0;i--){const j=Math.random()*(i+1)|0;[d[i],d[j]]=[d[j],d[i]]}
+G.end=null;G.deck=d;G.hands=Array.from({length:G.n},()=>[]);G.piles=Array.from({length:np},()=>({c:[],u:false}));
+deal();G.table=G.deck.splice(0,4);G.cyc=1;G.tot=G.n==4?3:G.n==3?4:6;G.first=Array(G.n).fill(false);
+G.cur=Math.random()*G.n|0;G.mp=-1;G.mt='New round started.';sel=[];render();loop()}
+function deal(){for(let p=0;p<G.n;p++)G.hands[p].push(...G.deck.splice(0,4))}
+const rm=(p,s)=>G.hands[p]=G.hands[p].filter(c=>!s.includes(c));
+function opts(p,s){const o=[],pi=pileOf(p),P=G.piles[pi],r=s[0].r,same=s.every(c=>c.r==r),
+first=G.cyc==1&&!G.first[p],go=(l,g,f)=>o.push({l,g,f});if(!same)return o;
+if(s.length>1||(P.c.length&&tp(P.c).r==r))go('Add to your pile',sum(s),()=>{rm(p,s);P.c.push(...s);P.u=false;return 1});
+if(s.length==1){const c=s[0],T=G.table;
+if(T.length&&tp(T).r==r){if(first)go('Take WHOLE table pile',sum(T)+pts(c),()=>{rm(p,s);P.c.push(...T,c);G.table=[];P.u=true;return 1});
+const k=run(T);go('Take matching from table',sum(T.slice(-k))+pts(c),()=>{rm(p,s);P.c.push(...T.splice(-k),c);P.u=false;return 1})}
+G.piles.forEach((Q,j)=>{if(j==pi||!Q.c.length||tp(Q.c).r!=r)return;
+if(first&&Q.u)go('Take WHOLE pile of '+plname(j),sum(Q.c)*1.3+pts(c),()=>{rm(p,s);P.c.push(...Q.c,c);Q.c=[];Q.u=false;P.u=true;return 1});
+const k=run(Q.c);go('Take from '+plname(j),sum(Q.c.slice(-k))*1.3+pts(c),()=>{rm(p,s);P.c.push(...Q.c.splice(-k),c);P.u=false;return 1})});
+go('Discard',-pts(c),()=>{rm(p,s);G.table.push(c);return 0})}
+return o}
+function apply(p,o){G.mp=p;G.mt=o.l;const ex=o.f();sel=[];G.extra=!!(ex&&G.hands[p].length);if(G.extra){G.mt+=' – moves again';render();loop()}else endTurn()}
+function endTurn(){G.extra=false;G.first[G.cur]=true;if(G.first.every(x=>x))G.piles.forEach(q=>q.u=false);
+for(let i=1;i<=G.n;i++){const q=(G.cur+i)%G.n;if(G.hands[q].length){G.cur=q;render();return loop()}}
+if(G.deck.length){deal();G.cyc++;G.cur=(G.cur+1)%G.n;G.mt+=' | New cycle dealt.';render();loop()}else roundEnd()}
+function loop(){if(!G.on&&G.cur!=0)setTimeout(ai,950)}
+function ai(){if(!G||G.on)return;const p=G.cur,h=G.hands[p],g={};let best=null;h.forEach(c=>(g[c.r]=g[c.r]||[]).push(c));
+const cand=h.map(c=>[c]);Object.values(g).forEach(x=>x.length>1&&cand.push(x));
+cand.forEach(s=>opts(p,s).forEach(o=>{o.g+=Math.random()*.1;if(!best||o.g>best.g)best=o}));apply(p,best)}
+function roundEnd(){const rs=G.piles.map(q=>sum(q.c));G.scores=G.scores.map((x,i)=>x+rs[i]);G.end=rs;render()}
+function pick(i){if(G.cur!=ME)return;const c=G.hands[ME][i];
+if(sel.includes(c))sel=sel.filter(x=>x!=c);else if(sel.length&&sel[0].r==c.r)sel.push(c);else sel=[c];render()}
+function doOpt(i){apply(ME,cuo[i])}
+function skip(){if(G.cur!=ME||!G.extra)return;G.mp=ME;G.mt='ended turn without discarding';sel=[];endTurn()}
+const ch=(c,cl='',k='')=>`<div class="card ${c.s==1||c.s==2?'red':''} ${cl}" ${k}><b>${N[c.r]}</b><span>${S[c.s]}</span></div>`;
+function render(ns){if(G.on&&!ns)save();const me=G.cur==ME;cuo=me&&sel.length?opts(ME,sel):[];
+$('ov').style.display=G.end?'flex':'none';if(G.end){const rs=G.end,mx=Math.max(...G.scores),w=G.scores.reduce((a,x,i)=>x==mx?[...a,i]:a,[]);
+let h='<h3>Round over</h3><table style="width:100%">';G.scores.forEach((x,i)=>h+=`<tr><td>${plname(i)}</td><td>+${rs[i]}</td><td><b>${x}</b></td></tr>`);h+='</table>';
+if(mx>=52){const nm=plname(w[0]);h+=`<p><b>${w.length>1?'Draw!':nm+(nm=='You'?' win':' wins')+'!'}</b></p><button class=p onclick=menu()>New game</button>`}
+else h+='<p>First to 52 wins.</p>'+(!G.on||ME==0?'<button class=p onclick=newRound()>Next round</button>':'<em>Waiting for Player 1…</em>');$('ov').innerHTML='<div>'+h+'</div>'}
+const pl=G.piles.map((q,i)=>{const hide=G.n==4&&i!=ME%2,cs=hide?(q.c.length?[tp(q.c)]:[]):q.c;
+return `<div class=pn><h4>${plname(i)} · ${hide?'':sum(q.c)+' pts · '}${q.c.length} cards ${q.u?'🔓 unsecured':''}</h4>${cs.map(c=>ch(c,'sm')).join('')||'<em>empty</em>'}</div>`}).join('');
+const hc=Array.from({length:G.n},(_,p)=>p).filter(p=>p!=ME).map(p=>`${pname(p)}: ${G.hands[p].length}`).join(' · ');
+$('app').innerHTML=`<div class=sc><b>Bazaar</b> <button onclick=menu()>Menu</button> Round cycle ${G.cyc}/${G.tot} · Deck ${G.deck.length}<br>${G.scores.map((s,i)=>`<span>${plname(i)}: <b>${s}</b>/52</span>`).join('')}</div>
+<div class="msg">${me?'▶ Your turn. ':'⏳ '+pname(G.cur)+(G.on?"'s turn. ":' thinking… ')}${G.mp>=0?pname(G.mp)+': ':''}${G.mt}</div><div class=row><div>${pl}</div>
+<div class="pn ft"><h4>Common table pile (${G.table.length} cards)</h4>${G.table.length?G.table.slice(-4).map((c,i,a)=>ch(c,i==a.length-1?'big':'sm')).join(''):'<em>empty</em>'}<p style="font-size:12px">Hands – ${hc}</p></div></div>
+<div class=pn><h4>Your hand (tap cards; tap several of the same rank for a pair)</h4>${G.hands[ME].map((c,i)=>ch(c,sel.includes(c)?'sel':'',`onclick=pick(${i})`)).join('')||'<em>no cards</em>'}
+<div>${cuo.map((o,i)=>`<button class="${o.l=='Discard'?'':'p'}" onclick=doOpt(${i})>${o.l}</button>`).join('')||(me?'<em>Select a card to see your moves.</em>':'')}${me&&G.extra?'<button onclick=skip()>⏭ End turn (skip discard)</button>':''}</div></div>`}
+const DB_URL='https://console.firebase.google.com/project/bazaar-d15ef/database/bazaar-d15ef-default-rtdb/data/~2F';
+let lastS='',lastL='';
+const uid=()=>{try{let u=sessionStorage.getItem('bzid');if(!u){u=Math.random().toString(36).slice(2,10);sessionStorage.setItem('bzid',u)}return u}catch(e){return MYID||Math.random().toString(36).slice(2,10)}};
+const cfgOk=()=>/^https:\/\//.test(DB_URL)||(alert('Online play is not set up yet: put your Firebase database URL into DB_URL at the top of the script.'),false);
+async function api(m,p,b,c){const r=await fetch(DB_URL.replace(/\/$/,'')+'/games/'+(c||CODE)+(p||'')+'.json',{method:m,body:b===undefined?undefined:JSON.stringify(b)});if(!r.ok)throw new Error(r.status);return r.json()}
+async function createRoom(n){if(!cfgOk())return;MYID=uid();const c=Math.random().toString(36).slice(2,6).toUpperCase();
+try{await api('PUT','',{n,seats:{[MYID]:Date.now()},s:''},c)}catch(e){return alert('Could not reach the database. Check DB_URL and the database rules.')}watch(c)}
+async function joinRoom(){if(!cfgOk())return;MYID=uid();const c=($('code').value||'').trim().toUpperCase();if(!c)return;let d;
+try{d=await api('GET','',undefined,c)}catch(e){return alert('Could not reach the database.')}
+if(!d)return alert('Room not found.');
+if(!d.order&&!(MYID in (d.seats||{}))&&Object.keys(d.seats||{}).length<d.n)await api('PUT','/seats/'+MYID,Date.now(),c);watch(c)}
+function watch(c){if(UN)UN();ME=-1;G=null;CODE=c;lastS='';lastL='';$('ov').style.display='none';poll();const t=setInterval(poll,1300);UN=()=>clearInterval(t)}
+async function poll(){let d;try{d=await api('GET')}catch(e){return}
+if(!d){$('app').innerHTML='<p>Room not found.</p><button onclick=menu()>Back</button>';return}
+const seats=Object.entries(d.seats||{}).sort((a,b)=>a[1]-b[1]||(a[0]<b[0]?-1:1)).map(x=>x[0]),order=d.order||seats;ME=order.indexOf(MYID);
+if(ME<0){$('app').innerHTML='<p>Room is full or already started.</p><button onclick=menu()>Back</button>';return}
+if(d.s){if(d.s!==lastS){const g=JSON.parse(d.s);if(!G||g.v>(G.v||0)){G=g;G.on=true;sel=[];lastS=d.s;render(true)}}}
+else{const k=JSON.stringify(seats);if(k!==lastL){lastL=k;lobby({n:d.n,seats})}}}
+function lobby(d){LB=d;$('app').innerHTML=`<h2>Room ${CODE}</h2><div class=pn><p>Share this code. Friends open this same page and tap Join room.</p><p>${d.seats.length}/${d.n} joined: ${d.seats.map((_,i)=>'Player '+(i+1)+(i==ME?' (you)':'')).join(', ')}</p>${ME==0&&d.seats.length==d.n?'<button class=p onclick=startOnline()>Start game</button>':'<em>Waiting…</em>'} <button onclick=menu()>Leave</button></div>`}
+async function startOnline(){G={n:LB.n,scores:Array(LB.n==4?2:LB.n).fill(0),on:true};try{await api('PATCH','',{order:LB.seats})}catch(e){return alert('Could not start.')}newRound()}
+function save(){G.v=(G.v||0)+1;const j=JSON.stringify(G);lastS=j;api('PATCH','',{s:j}).catch(e=>console.log('sync failed',e))}
+menu();
+</script></body></html>
