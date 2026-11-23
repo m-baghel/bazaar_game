@@ -83,7 +83,7 @@ $('app').innerHTML=`<div class=sc><b>Bazaar</b> <button onclick=menu()>Menu</but
 <div class="pn ft"><h4>Common table pile (${G.table.length} cards)</h4>${G.table.length?G.table.slice(-4).map((c,i,a)=>ch(c,i==a.length-1?'big':'sm')).join(''):'<em>empty</em>'}<p style="font-size:12px">Hands – ${hc}</p></div></div>
 <div class=pn><h4>Your hand (tap cards; tap several of the same rank for a pair)</h4>${G.hands[ME].map((c,i)=>ch(c,sel.includes(c)?'sel':'',`onclick=pick(${i})`)).join('')||'<em>no cards</em>'}
 <div>${cuo.map((o,i)=>`<button class="${o.l=='Discard'?'':'p'}" onclick=doOpt(${i})>${o.l}</button>`).join('')||(me?'<em>Select a card to see your moves.</em>':'')}${me&&G.extra?'<button onclick=skip()>⏭ End turn (skip discard)</button>':''}</div></div>`}
-const DB_URL='https://console.firebase.google.com/project/bazaar-d15ef/database/bazaar-d15ef-default-rtdb/data/~2F';
+const DB_URL='https://bazaar-d15ef-default-rtdb.asia-southeast1.firebasedatabase.app/';
 let lastS='',lastL='';
 const uid=()=>{try{let u=sessionStorage.getItem('bzid');if(!u){u=Math.random().toString(36).slice(2,10);sessionStorage.setItem('bzid',u)}return u}catch(e){return MYID||Math.random().toString(36).slice(2,10)}};
 const cfgOk=()=>/^https:\/\//.test(DB_URL)||(alert('Online play is not set up yet: put your Firebase database URL into DB_URL at the top of the script.'),false);
