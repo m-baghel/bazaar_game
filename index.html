@@ -1,35 +1,52 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Bazaar</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-:root{--bg:#f4f1ea;--fg:#222;--pn:#fff;--ft:#2d6a4f;--bd:#c9c3b5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1d1f;--fg:#eee;--pn:#2a2d30;--ft:#1f4d3a;--bd:#444}}
-:root[data-theme="dark"]{--bg:#1b1d1f;--fg:#eee;--pn:#2a2d30;--ft:#1f4d3a;--bd:#444}
-body{margin:0;background:var(--bg);color:var(--fg);font:15px system-ui,sans-serif;padding:10px;max-width:900px;margin:auto}
-h4{margin:0 0 4px;font-size:13px}button{font:inherit;padding:8px 12px;margin:3px;border-radius:8px;border:1px solid var(--bd);background:var(--pn);color:var(--fg);cursor:pointer}
-button.p{background:#e0a100;color:#111;border-color:#e0a100;font-weight:600}
-.pn{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:8px;margin:8px 0}
-.ft{background:var(--ft);color:#fff;border-color:var(--ft)}
-.card{width:46px;height:66px;background:#fff;color:#111;border-radius:6px;border:1px solid #888;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;font-size:16px;margin:2px;vertical-align:top;user-select:none}
-.card.red{color:#c0272d}.card.sel{transform:translateY(-10px);outline:3px solid #e0a100}
-.card.sm{width:32px;height:46px;font-size:12px;margin:1px}.card.big{width:62px;height:88px;font-size:22px}
-.back{background:repeating-linear-gradient(45deg,#2f5d9e,#2f5d9e 4px,#244a80 4px,#244a80 8px)}
-.row{display:flex;flex-wrap:wrap;gap:8px}.row>div{flex:1;min-width:230px}
-.sc span{display:inline-block;margin-right:12px}.msg{font-weight:600;min-height:20px}
-#ov{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px}
-#ov>div{background:var(--pn);padding:18px;border-radius:12px;max-width:380px;width:100%}
-details{font-size:13px}
-</style></head><body><div id="app"></div><div id="ov"></div>
+:root{--gold:#e8b84a;--pn:rgba(255,255,255,.07);--bd:rgba(255,255,255,.15);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{background:#10231a}body{margin:0 auto;max-width:880px;padding:10px 10px 70px;color:#f3efe4;font:15px system-ui,sans-serif;background:radial-gradient(ellipse at 50% 0,#1d4a35,#10231a 70%) fixed;min-height:100vh}
+h2,h4{margin:0}h4{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;color:#cfe3d5}h4 span{font-weight:400;opacity:.8}
+button{font:inherit;padding:9px 14px;margin:3px;border-radius:10px;border:1px solid var(--bd);background:#2a3d33;color:#f3efe4;cursor:pointer;transition:.15s}button:hover{background:#38503f}
+button.p{background:linear-gradient(#f2c65c,#d9a02c);color:#2a1c00;border:0;font-weight:700;box-shadow:0 2px 8px #0007}
+input{background:#0d1a13;color:#fff;border:1px solid var(--bd);border-radius:8px}
+.pn{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:10px;margin:8px 0;backdrop-filter:blur(3px)}
+.hero{text-align:center;padding:18px 0 6px}.hero h1{margin:0;font:700 44px Georgia,serif;letter-spacing:8px;color:var(--gold);text-shadow:0 3px 12px #000a}.hero div{opacity:.8}
+.top{display:flex;align-items:center;gap:10px}.top span{flex:1;opacity:.8}.logo{font:700 20px Georgia,serif;letter-spacing:4px;color:var(--gold)}
+.sb{display:flex;gap:8px;flex-wrap:wrap}.chip{flex:1;min-width:120px;background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:6px 10px;font-size:13px}
+.bar{height:6px;background:#0007;border-radius:4px;margin-top:5px;overflow:hidden}.bar u{display:block;height:100%;background:linear-gradient(90deg,#6fcf97,var(--gold))}
+.seats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.seat{flex:1;min-width:140px;display:flex;gap:10px;align-items:center;background:var(--pn);border:2px solid transparent;border-radius:12px;padding:8px}
+.seat.turn,.hand.turn{border-color:var(--gold);animation:glow 1.4s infinite alternate}@keyframes glow{to{box-shadow:0 0 14px var(--gold)}}
+.av{font-size:26px;width:42px;height:42px;border-radius:50%;background:#0006;display:flex;align-items:center;justify-content:center}
+.mini{display:flex;margin-top:4px}.mini i{width:12px;height:18px;border-radius:2px;margin-right:-6px;border:1px solid #fff8;background:#2f5d9e}
+.msg{background:#0006;border-radius:10px;padding:9px 12px;font-weight:600;border-left:4px solid #666}.msg.my{border-color:var(--gold);color:var(--gold)}
+.felt{position:relative;margin:10px 0;padding:16px;border-radius:50% / 22%;min-height:150px;display:flex;align-items:center;justify-content:center;gap:34px;flex-wrap:wrap;background:radial-gradient(ellipse,#2f8a5c,#17553a 70%);border:6px solid #5a3a1e;box-shadow:inset 0 0 40px #0008,0 6px 16px #0008}
+.felt small{display:block;text-align:center;margin-top:6px;opacity:.85}.tpile{display:flex;align-items:center;min-width:130px;height:100px;justify-content:center}.tpile .card{margin:0 -22px}.tpile .card.big{margin:0}
+.piles{display:flex;gap:8px;flex-wrap:wrap}.pile{flex:1;min-width:240px}.pile.mine{border-color:#6fcf97}.cards{display:flex;flex-wrap:wrap;min-height:30px}
+.pile .card{margin-left:-20px}.pile .card:first-child{margin-left:0}.cards em{opacity:.6}
+.card{width:58px;height:84px;margin:3px;background:#fffdf7;color:#14141a;border-radius:8px;border:1px solid #999;box-shadow:0 2px 5px #0006;position:relative;font-family:Georgia,serif;font-weight:700;user-select:none;transition:transform .15s;flex:none}
+.card i{font-style:normal;position:absolute}.cn{top:4px;left:5px;font-size:15px;line-height:1;text-align:center}.cb{top:auto;left:auto;bottom:4px;right:5px;transform:rotate(180deg)}
+.ct{inset:0;display:flex;align-items:center;justify-content:center;font-size:30px}.card.red{color:#c0272d}
+.hand .card:hover{transform:translateY(-6px)}.card.sel{transform:translateY(-14px);box-shadow:0 0 0 3px var(--gold),0 8px 14px #000a}
+.card.big{width:68px;height:98px;z-index:2}.card.sm{width:40px;height:58px}.card.sm .ct,.card.sm .cb{display:none}.card.sm .cn{font-size:13px}
+.card.back{background:repeating-linear-gradient(45deg,#2f5d9e,#2f5d9e 4px,#244a80 4px,#244a80 8px);border:3px solid #fffdf7}.card.back i{display:none}
+.acts{margin-top:8px;display:flex;flex-wrap:wrap}.acts em{opacity:.7;padding:8px}
+#ov{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:9}#ov>div{background:#1b2f24;border:2px solid var(--gold);padding:20px;border-radius:16px;max-width:380px;width:100%;text-align:center}
+details{font-size:13px}ul{padding-left:18px}
+#chat{display:none;position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:8;flex-direction:column;align-items:flex-end}
+#cp{display:none;flex-direction:column;width:min(320px,calc(100vw - 20px));height:300px;background:#1b2f24;border:1px solid var(--bd);border-radius:12px;padding:8px;margin-bottom:6px;box-shadow:0 6px 18px #000a}
+#cl{flex:1;overflow:auto;font-size:13px}#cl div{margin:3px 0;word-break:break-word}#cl .me b{color:var(--gold)}#cq{display:flex;flex-wrap:wrap}#cq button{padding:3px 8px;margin:2px}#ci{display:flex}#ci input{flex:1;padding:7px;min-width:0}
+</style></head><body><div id="app"></div><div id="ov"></div><div id="chat"></div>
 <script>
 const N=['','','2','3','4','5','6','7','8','9','10','J','Q','K','A'],S=['♠','♥','♦','♣'];
 const pts=c=>c.r<=9?.5:c.r<=13?1:2,sum=a=>a.reduce((t,c)=>t+pts(c),0),tp=a=>a[a.length-1];
 const run=a=>{let k=0;while(k<a.length&&a[a.length-1-k].r==tp(a).r)k++;return k};
-const $=id=>document.getElementById(id);let G=null,sel=[],cuo=[],ME=0,MYID='',DB=null,UN=null,CODE='',LB=null;
+const $=id=>document.getElementById(id);let NAME='',NM=[];try{NAME=localStorage.getItem('bzname')||''}catch(e){}
+const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+let G=null,sel=[],cuo=[],ME=0,MYID='',DB=null,UN=null,CODE='',LB=null;
 const pileOf=p=>G.n==4?p%2:p;
-const pname=p=>p==ME?'You':G.on?'Player '+(p+1)+(G.n==4&&p%2==ME%2?' (partner)':''):G.n==4?['','West','Partner','East'][p]:G.n==2?'Computer':'CPU '+p;
-const plname=i=>G.n==4?(i==ME%2?'Your team':'Opponents'):i==ME?'You':G.on?'Player '+(i+1):G.n==2?'Computer':'CPU '+i;
-function menu(){if(UN){UN();UN=null}ME=0;G=null;$('ov').style.display='none';$('app').innerHTML=`<h2>🃏 Bazaar</h2><div class=pn><p>Build face-up piles of matching cards. First to <b>52 points</b> wins. Choose a mode:</p>
+const pname=p=>p==ME?'You':G.on?(NM[p]||'Player '+(p+1))+(G.n==4&&p%2==ME%2?' (partner)':''):G.n==4?['','West','Partner','East'][p]:G.n==2?'Computer':'CPU '+p;
+const plname=i=>G.n==4?(i==ME%2?'Your team':'Opponents'):i==ME?'You':G.on?(NM[i]||'Player '+(i+1)):G.n==2?'Computer':'CPU '+i;
+function menu(){if(UN){UN();UN=null}ME=0;G=null;$('ov').style.display='none';$('app').innerHTML=`<div class=hero><h1>BAZAAR</h1><div>A card game of piles and steals</div></div><div class=pn><p>Build face-up piles of matching cards. First to <b>52 points</b> wins. Choose a mode:</p>
 <button class=p onclick=start(2)>2 players</button><button class=p onclick=start(3)>3 players (free-for-all)</button><button class=p onclick=start(4)>4 players (you + partner vs 2)</button></div>
-<div class=pn><b>🌐 Play online with friends</b><br><button onclick=createRoom(2)>Create 2-player room</button><button onclick=createRoom(3)>3-player</button><button onclick=createRoom(4)>4-player (teams)</button><br><input id=code placeholder="Room code" maxlength=4 style="padding:8px;width:110px"><button onclick=joinRoom()>Join room</button></div><details class=pn open><summary>Rules as implemented</summary><ul>
+<div class=pn><b>🌐 Play online with friends</b><br><input id=nm placeholder="Your name" maxlength=12 value="${esc(NAME)}" style="padding:8px;width:150px"><br><button onclick=createRoom(2)>Create 2-player room</button><button onclick=createRoom(3)>3-player</button><button onclick=createRoom(4)>4-player (teams)</button><br><input id=code placeholder="Room code" maxlength=4 style="padding:8px;width:110px"><button onclick=joinRoom()>Join room</button></div><details class=pn open><summary>Rules as implemented</summary><ul>
 <li>2–9 = ½ pt, 10–K = 1 pt, Ace = 2 pts. Everyone gets 4 cards per cycle; 4 cards start face-up on the table.</li>
 <li><b>Add to your pile:</b> a pair/triplet/quad from hand, <b>or a single card matching the face-up top card</b> of your pile.</li>
 <li><b>Take:</b> a card matching the top of the table pile or an opponent's pile takes the matching top card(s).</li>
@@ -69,40 +86,57 @@ function pick(i){if(G.cur!=ME)return;const c=G.hands[ME][i];
 if(sel.includes(c))sel=sel.filter(x=>x!=c);else if(sel.length&&sel[0].r==c.r)sel.push(c);else sel=[c];render()}
 function doOpt(i){apply(ME,cuo[i])}
 function skip(){if(G.cur!=ME||!G.extra)return;G.mp=ME;G.mt='ended turn without discarding';sel=[];endTurn()}
-const ch=(c,cl='',k='')=>`<div class="card ${c.s==1||c.s==2?'red':''} ${cl}" ${k}><b>${N[c.r]}</b><span>${S[c.s]}</span></div>`;
+const ch=(c,cl='',k='')=>{const t=N[c.r],m=c.r>=11&&c.r<=13?t:'';return `<div class="card ${c.s==1||c.s==2?'red':''} ${cl}" ${k}><i class=cn>${t}<br>${S[c.s]}</i><i class=ct>${m}${S[c.s]}</i><i class="cn cb">${t}<br>${S[c.s]}</i></div>`};
 function render(ns){if(G.on&&!ns)save();const me=G.cur==ME;cuo=me&&sel.length?opts(ME,sel):[];
 $('ov').style.display=G.end?'flex':'none';if(G.end){const rs=G.end,mx=Math.max(...G.scores),w=G.scores.reduce((a,x,i)=>x==mx?[...a,i]:a,[]);
 let h='<h3>Round over</h3><table style="width:100%">';G.scores.forEach((x,i)=>h+=`<tr><td>${plname(i)}</td><td>+${rs[i]}</td><td><b>${x}</b></td></tr>`);h+='</table>';
 if(mx>=52){const nm=plname(w[0]);h+=`<p><b>${w.length>1?'Draw!':nm+(nm=='You'?' win':' wins')+'!'}</b></p><button class=p onclick=menu()>New game</button>`}
-else h+='<p>First to 52 wins.</p>'+(!G.on||ME==0?'<button class=p onclick=newRound()>Next round</button>':'<em>Waiting for Player 1…</em>');$('ov').innerHTML='<div>'+h+'</div>'}
-const pl=G.piles.map((q,i)=>{const hide=G.n==4&&i!=ME%2,cs=hide?(q.c.length?[tp(q.c)]:[]):q.c;
-return `<div class=pn><h4>${plname(i)} · ${hide?'':sum(q.c)+' pts · '}${q.c.length} cards ${q.u?'🔓 unsecured':''}</h4>${cs.map(c=>ch(c,'sm')).join('')||'<em>empty</em>'}</div>`}).join('');
-const hc=Array.from({length:G.n},(_,p)=>p).filter(p=>p!=ME).map(p=>`${pname(p)}: ${G.hands[p].length}`).join(' · ');
-$('app').innerHTML=`<div class=sc><b>Bazaar</b> <button onclick=menu()>Menu</button> Round cycle ${G.cyc}/${G.tot} · Deck ${G.deck.length}<br>${G.scores.map((s,i)=>`<span>${plname(i)}: <b>${s}</b>/52</span>`).join('')}</div>
-<div class="msg">${me?'▶ Your turn. ':'⏳ '+pname(G.cur)+(G.on?"'s turn. ":' thinking… ')}${G.mp>=0?pname(G.mp)+': ':''}${G.mt}</div><div class=row><div>${pl}</div>
-<div class="pn ft"><h4>Common table pile (${G.table.length} cards)</h4>${G.table.length?G.table.slice(-4).map((c,i,a)=>ch(c,i==a.length-1?'big':'sm')).join(''):'<em>empty</em>'}<p style="font-size:12px">Hands – ${hc}</p></div></div>
-<div class=pn><h4>Your hand (tap cards; tap several of the same rank for a pair)</h4>${G.hands[ME].map((c,i)=>ch(c,sel.includes(c)?'sel':'',`onclick=pick(${i})`)).join('')||'<em>no cards</em>'}
-<div>${cuo.map((o,i)=>`<button class="${o.l=='Discard'?'':'p'}" onclick=doOpt(${i})>${o.l}</button>`).join('')||(me?'<em>Select a card to see your moves.</em>':'')}${me&&G.extra?'<button onclick=skip()>⏭ End turn (skip discard)</button>':''}</div></div>`}
+else h+='<p>First to 52 wins.</p>'+(!G.on||ME==0?'<button class=p onclick=newRound()>Next round</button>':'<em>Waiting for '+(NM[0]||'Player 1')+'…</em>');$('ov').innerHTML='<div>'+h+'</div>'}
+const hid=i=>G.n==4&&i!=ME%2;
+const pl=G.piles.map((q,i)=>{const cs=hid(i)?(q.c.length?[tp(q.c)]:[]):q.c;
+return `<div class="pn pile ${i==pileOf(ME)?'mine':''}"><h4>${plname(i)} <span>${hid(i)?'':sum(q.c)+' pts · '}${q.c.length} cards${q.u?' · 🔓 unsecured':''}</span></h4><div class=cards>${cs.map(c=>ch(c,'sm')).join('')||'<em>empty</em>'}</div></div>`}).join('');
+const seats=Array.from({length:G.n},(_,p)=>p).filter(p=>p!=ME).map(p=>`<div class="seat${G.cur==p?' turn':''}"><div class=av>${G.on?'👤':(G.n==4&&p==2?'🤝':'🤖')}</div><div><b>${pname(p)}</b><div class=mini>${G.hands[p].map(()=>'<i></i>').join('')||'<small>no cards</small>'}</div></div></div>`).join('');
+const sb=G.scores.map((x,i)=>`<div class=chip><div><b>${plname(i)}</b> · ${x} / 52</div><div class=bar><u style="width:${Math.min(100,x/52*100)}%"></u></div></div>`).join('');
+const T=G.table.slice(-5);
+const felt=`<div class=felt><div><div class="card back"></div><small>${G.deck.length} in deck</small></div><div><div class=tpile>${T.map((c,i)=>ch(c,i==T.length-1?'big':'',`style="transform:rotate(${(i-T.length+1)*6}deg)"`)).join('')||'<em>empty</em>'}</div><small>Table pile · ${G.table.length}</small></div></div>`;
+$('app').innerHTML=`<div class=top><b class=logo>BAZAAR</b><span>Cycle ${G.cyc} of ${G.tot}</span><button onclick=menu()>Menu</button></div><div class=sb>${sb}</div><div class=seats>${seats}</div>
+<div class="msg ${me?'my':''}">${me?'▶ Your turn. ':'⏳ '+pname(G.cur)+(G.on?"'s turn. ":' thinking… ')}${G.mp>=0?pname(G.mp)+': ':''}${G.mt}</div>${felt}<div class=piles>${pl}</div>
+<div class="pn hand ${me?'turn':''}"><h4>Your hand <span>${me?'tap a card · tap more of the same rank for a pair':''}</span></h4><div class=cards>${G.hands[ME].map((c,i)=>ch(c,sel.includes(c)?'sel':'',`onclick=pick(${i})`)).join('')||'<em>no cards</em>'}</div>
+<div class=acts>${cuo.map((o,i)=>`<button class="${o.l=='Discard'?'':'p'}" onclick=doOpt(${i})>${o.l}</button>`).join('')||(me?'<em>Select a card to see your moves.</em>':'')}${me&&G.extra?'<button onclick=skip()>⏭ End turn (skip discard)</button>':''}</div></div>`}
 const DB_URL='https://bazaar-d15ef-default-rtdb.asia-southeast1.firebasedatabase.app/';
 let lastS='',lastL='';
 const uid=()=>{try{let u=sessionStorage.getItem('bzid');if(!u){u=Math.random().toString(36).slice(2,10);sessionStorage.setItem('bzid',u)}return u}catch(e){return MYID||Math.random().toString(36).slice(2,10)}};
+const getName=()=>{NAME=(($('nm')||{}).value||'').trim().slice(0,12);try{localStorage.setItem('bzname',NAME)}catch(e){}return NAME};
 const cfgOk=()=>/^https:\/\//.test(DB_URL)||(alert('Online play is not set up yet: put your Firebase database URL into DB_URL at the top of the script.'),false);
 async function api(m,p,b,c){const r=await fetch(DB_URL.replace(/\/$/,'')+'/games/'+(c||CODE)+(p||'')+'.json',{method:m,body:b===undefined?undefined:JSON.stringify(b)});if(!r.ok)throw new Error(r.status);return r.json()}
 async function createRoom(n){if(!cfgOk())return;MYID=uid();const c=Math.random().toString(36).slice(2,6).toUpperCase();
-try{await api('PUT','',{n,seats:{[MYID]:Date.now()},s:''},c)}catch(e){return alert('Could not reach the database. Check DB_URL and the database rules.')}watch(c)}
+try{await api('PUT','',{n,seats:{[MYID]:Date.now()},names:{[MYID]:getName()},s:''},c)}catch(e){return alert('Could not reach the database. Check DB_URL and the database rules.')}watch(c)}
 async function joinRoom(){if(!cfgOk())return;MYID=uid();const c=($('code').value||'').trim().toUpperCase();if(!c)return;let d;
 try{d=await api('GET','',undefined,c)}catch(e){return alert('Could not reach the database.')}
 if(!d)return alert('Room not found.');
-if(!d.order&&!(MYID in (d.seats||{}))&&Object.keys(d.seats||{}).length<d.n)await api('PUT','/seats/'+MYID,Date.now(),c);watch(c)}
-function watch(c){if(UN)UN();ME=-1;G=null;CODE=c;lastS='';lastL='';$('ov').style.display='none';poll();const t=setInterval(poll,1300);UN=()=>clearInterval(t)}
+if(!d.order&&!(MYID in (d.seats||{}))&&Object.keys(d.seats||{}).length<d.n)await api('PUT','/seats/'+MYID,Date.now(),c);if(!d.order||(MYID in (d.seats||{})))await api('PUT','/names/'+MYID,getName(),c);watch(c)}
+function watch(c){if(UN)UN();ME=-1;G=null;CODE=c;lastS='';lastL='';$('ov').style.display='none';poll();const t=setInterval(poll,1300);chatInit();UN=()=>{clearInterval(t);clearInterval(CT);$('chat').style.display='none'}}
 async function poll(){let d;try{d=await api('GET')}catch(e){return}
 if(!d){$('app').innerHTML='<p>Room not found.</p><button onclick=menu()>Back</button>';return}
-const seats=Object.entries(d.seats||{}).sort((a,b)=>a[1]-b[1]||(a[0]<b[0]?-1:1)).map(x=>x[0]),order=d.order||seats;ME=order.indexOf(MYID);
+const seats=Object.entries(d.seats||{}).sort((a,b)=>a[1]-b[1]||(a[0]<b[0]?-1:1)).map(x=>x[0]),order=d.order||seats;ME=order.indexOf(MYID);NM=order.map(id=>esc((d.names||{})[id]||''));
 if(ME<0){$('app').innerHTML='<p>Room is full or already started.</p><button onclick=menu()>Back</button>';return}
 if(d.s){if(d.s!==lastS){const g=JSON.parse(d.s);if(!G||g.v>(G.v||0)){G=g;G.on=true;sel=[];lastS=d.s;render(true)}}}
-else{const k=JSON.stringify(seats);if(k!==lastL){lastL=k;lobby({n:d.n,seats})}}}
-function lobby(d){LB=d;$('app').innerHTML=`<h2>Room ${CODE}</h2><div class=pn><p>Share this code. Friends open this same page and tap Join room.</p><p>${d.seats.length}/${d.n} joined: ${d.seats.map((_,i)=>'Player '+(i+1)+(i==ME?' (you)':'')).join(', ')}</p>${ME==0&&d.seats.length==d.n?'<button class=p onclick=startOnline()>Start game</button>':'<em>Waiting…</em>'} <button onclick=menu()>Leave</button></div>`}
+else{const k=JSON.stringify([seats,NM]);if(k!==lastL){lastL=k;lobby({n:d.n,seats})}}}
+function lobby(d){LB=d;$('app').innerHTML=`<h2>Room ${CODE}</h2><div class=pn><p>Share this code. Friends open this same page and tap Join room.</p><p>${d.seats.length}/${d.n} joined: ${d.seats.map((_,i)=>(NM[i]||'Player '+(i+1))+(i==ME?' (you)':'')).join(', ')}</p>${ME==0&&d.seats.length==d.n?'<button class=p onclick=startOnline()>Start game</button>':'<em>Waiting…</em>'} <button onclick=menu()>Leave</button></div>`}
 async function startOnline(){G={n:LB.n,scores:Array(LB.n==4?2:LB.n).fill(0),on:true};try{await api('PATCH','',{order:LB.seats})}catch(e){return alert('Could not start.')}newRound()}
 function save(){G.v=(G.v||0)+1;const j=JSON.stringify(G);lastS=j;api('PATCH','',{s:j}).catch(e=>console.log('sync failed',e))}
+let CT=null,cOpen=false,seenKey='',lastC='';
+const cbase=()=>DB_URL.replace(/\/$/,'')+'/games/'+CODE+'/chat.json';
+function chatInit(){cOpen=false;seenKey='';lastC='';const c=$('chat');c.style.display='flex';
+c.innerHTML=`<div id=cp><div id=cl></div><div id=cq>${['👍','😂','😮','🔥','GG','Nice!'].map(e=>`<button onclick="chatSend('${e}')">${e}</button>`).join('')}</div><div id=ci><input id=cm maxlength=120 placeholder="Type a message" onkeydown="if(event.key=='Enter')chatSend()"><button class=p onclick=chatSend()>Send</button></div></div><button class=p onclick=chatToggle()>💬 Chat <b id=cn></b></button>`;
+chatPoll();CT=setInterval(chatPoll,2000)}
+function chatToggle(){cOpen=!cOpen;$('cp').style.display=cOpen?'flex':'none';if(cOpen)chatPoll()}
+async function chatSend(m){const el=$('cm'),t=String(m||el.value).trim();if(!t)return;el.value='';
+try{await fetch(cbase(),{method:'POST',body:JSON.stringify({p:ME,n:NAME,t:t.slice(0,120),ts:Date.now()})})}catch(e){}chatPoll()}
+async function chatPoll(){let o;try{o=await (await fetch(cbase()+'?orderBy=%22%24key%22&limitToLast=40')).json()}catch(e){return}
+o=o||{};const ks=Object.keys(o).sort(),last=ks[ks.length-1]||'';if(cOpen)seenKey=last;
+const un=ks.filter(k=>k>seenKey&&o[k].p!=ME).length;$('cn').textContent=un?'('+un+')':'';
+const sig=last+ks.length;if(sig!==lastC){lastC=sig;const l=$('cl');l.innerHTML='';
+ks.forEach(k=>{const m=o[k],d=document.createElement('div'),b=document.createElement('b');d.className=m.p==ME?'me':'';b.textContent=(m.p==ME?'You':(m.n||'Player '+(m.p+1)))+': ';d.append(b,String(m.t));l.append(d)});l.scrollTop=l.scrollHeight}}
 menu();
 </script></body></html>
